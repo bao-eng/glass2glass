@@ -38,5 +38,4 @@ void tpl1401_init(i2c_inst_t *i2c, uint8_t addr) {
 void tpl1401_set_threshold(i2c_inst_t *i2c, uint8_t addr, uint8_t threshold) {
   i2cparams data = {0x21, ((uint16_t)threshold) << 4, 0};
   tpl1401_reg_write(i2c, addr, data);
-  sleep_ms(TPL1401_DELAY);
 }
