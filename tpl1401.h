@@ -22,9 +22,9 @@ void tpl1401_reg_write(i2c_inst_t *i2c, uint8_t addr, i2cparams data) {
   }
 }
 
-uint16_t tpl1401_reg_read(i2c_inst_t *i2c, uint8_t addr, uint8_t *regaddr) {
+uint16_t tpl1401_reg_read(i2c_inst_t *i2c, uint8_t addr, uint8_t regaddr) {
   uint8_t buf[2];
-  i2c_write_blocking(i2c_default, addr, regaddr, 1, true);
+  i2c_write_blocking(i2c_default, addr, &regaddr, 1, true);
   i2c_read_blocking(i2c_default, addr, buf, 2, false);
   return (buf[0] << 8) | buf[1];
 }

@@ -28,13 +28,7 @@ int main() {
 
     tpl1401_init(i2c_default, ADDR);
     tpl1401_set_threshold(i2c_default, ADDR, 127);
-    {
-        uint8_t reg = 0x21;
-        uint8_t buf[2];
-        i2c_write_blocking(i2c_default, ADDR, &reg, 1, true);  // true to keep master control of bus
-        i2c_read_blocking(i2c_default, ADDR, buf, 2, false);  // false - finished with bus
-        printf("%#X %#X\n",buf[0], buf[1]);
-    }
+    printf("%#x\n", tpl1401_reg_read(i2c_default, ADDR, 0x21));
 
     while (true) {
         // Blink LED
