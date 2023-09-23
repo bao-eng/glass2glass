@@ -5,15 +5,19 @@
 #include "tpl1401.h"
 
 #define ADDR 0x48
+#define LED_PIN 14
+#define COMP_PIN 22
+
+bool repeating_timer_callback(struct repeating_timer *t) {
+    gpio_put(LED_PIN, !gpio_get(LED_PIN));
+    return true;
+}
 
 int main() {
-    const uint led_pin = 14;
-    const uint comp_pin = 22;
-    // Initialize LED pin
-    gpio_init(led_pin);
-    gpio_set_dir(led_pin, GPIO_OUT);
-    gpio_init(comp_pin);
-    gpio_set_dir(comp_pin, GPIO_IN);
+    gpio_init(LED_PIN);
+    gpio_set_dir(LED_PIN, GPIO_OUT);
+    gpio_init(COMP_PIN);
+    gpio_set_dir(COMP_PIN, GPIO_IN);
 
     // Enable UART so we can print status output
     stdio_init_all();
@@ -30,13 +34,11 @@ int main() {
     tpl1401_set_threshold(i2c_default, ADDR, 127);
     printf("%#x\n", tpl1401_reg_read(i2c_default, ADDR, 0x21));
 
+    struct repeating_timer timer;
+    add_repeating_timer_ms(1000, repeating_timer_callback, NULL, &timer);
+
     while (true) {
-        // Blink LED
-        printf("Blinking!\r\n");
-        gpio_put(led_pin, true);
-        sleep_ms(500);
-        gpio_put(led_pin, false);
-        sleep_ms(500);
+        tight_loop_contents();
     }
     return 0;
 }
