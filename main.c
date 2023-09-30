@@ -3,14 +3,28 @@
 #include "pico/binary_info.h"
 #include "hardware/i2c.h"
 #include "tpl1401.h"
+#include <inttypes.h>
 
 #define ADDR 0x48
 #define LED_PIN 14
 #define COMP_PIN 22
 #define STATUS_PIN 16
 
+uint64_t emitted_timestamp=0;
+uint64_t detected_timestamp=0;
+
 bool repeating_timer_callback(struct repeating_timer *t) {
-    gpio_put(LED_PIN, !gpio_get(LED_PIN));
+    bool state = !gpio_get(LED_PIN);
+    gpio_put(LED_PIN, state);
+    gpio_put(STATUS_PIN, state);
+    if(state)
+    {
+        emitted_timestamp = to_us_since_boot(get_absolute_time());
+    }else{
+        uint32_t delay = (uint32_t)detected_timestamp-(uint32_t)emitted_timestamp;
+        float delay_float = (float)delay/1000.0f;
+        printf("Delay: %.3fms\n", delay_float);
+    }
     return true;
 }
 
