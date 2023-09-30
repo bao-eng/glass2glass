@@ -14,6 +14,16 @@ bool repeating_timer_callback(struct repeating_timer *t) {
     return true;
 }
 
+void gpio_callback(uint gpio, uint32_t events) {
+    if(events == GPIO_IRQ_EDGE_RISE){
+        gpio_put(STATUS_PIN, true);
+        detected_timestamp = to_us_since_boot(get_absolute_time());
+    }
+    if(events == GPIO_IRQ_EDGE_FALL){
+        gpio_put(STATUS_PIN, false);
+    }
+}
+
 int main() {
     gpio_init(LED_PIN);
     gpio_set_dir(LED_PIN, GPIO_OUT);
@@ -32,6 +42,8 @@ int main() {
     gpio_pull_up(9);
     // Make the I2C pins available to picotool
     bi_decl(bi_2pins_with_func(8, 9, GPIO_FUNC_I2C));
+
+    gpio_set_irq_enabled_with_callback(COMP_PIN, GPIO_IRQ_EDGE_RISE | GPIO_IRQ_EDGE_FALL, true, &gpio_callback);
 
     tpl1401_init(i2c_default, ADDR);
     tpl1401_set_threshold(i2c_default, ADDR, 127);
