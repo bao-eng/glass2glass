@@ -7,6 +7,7 @@
 #define ADDR 0x48
 #define LED_PIN 14
 #define COMP_PIN 22
+#define STATUS_PIN 16
 
 bool repeating_timer_callback(struct repeating_timer *t) {
     gpio_put(LED_PIN, !gpio_get(LED_PIN));
@@ -16,6 +17,8 @@ bool repeating_timer_callback(struct repeating_timer *t) {
 int main() {
     gpio_init(LED_PIN);
     gpio_set_dir(LED_PIN, GPIO_OUT);
+    gpio_init(STATUS_PIN);
+    gpio_set_dir(STATUS_PIN, GPIO_OUT);
     gpio_init(COMP_PIN);
     gpio_set_dir(COMP_PIN, GPIO_IN);
 
